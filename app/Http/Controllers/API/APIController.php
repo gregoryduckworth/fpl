@@ -136,7 +136,7 @@ class APIController extends BaseController
      * around the team name and entry id
      * @return type
      */
-    public function getResults() {
+    public function getResults($gameweek = null) {
         $matches = $this->getMatches();
         $teams = $this->getTeams();
         foreach($teams as $team) {
@@ -150,6 +150,15 @@ class APIController extends BaseController
                     $matches[$key]['league_entry_2'] = $team['entry_name'];
                 }
             }
+        }
+        if($gameweek != null) {
+            $temp = [];
+            foreach($matches as $key => $match) {
+                if($match['event'] == $gameweek) {
+                    $temp[] = $match;
+                }
+            }
+            $matches = $temp;
         }
         return $matches;
     }

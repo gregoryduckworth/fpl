@@ -19,7 +19,7 @@ Route::get('matches', 'API\APIController@getMatches')->name('matches');
 Route::get('draft', 'API\APIController@getDraft')->name('draft');
 Route::get('all-teams', 'API\APIController@getAllTeamInfo')->name('all-teams');
 Route::get('trader', 'API\APIController@getTraders')->name('trader');
-Route::get('results', 'API\APIController@getResults')->name('results');
+Route::get('results/{gameweek?}', 'API\APIController@getResults')->name('results');
 Route::get('biggest', 'API\APIController@getBiggest')->name('biggest');
 Route::get('highest', 'API\APIController@getHighest')->name('highest');
 Route::get('lowest', 'API\APIController@getLowest')->name('lowest');

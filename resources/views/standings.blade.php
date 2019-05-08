@@ -3,8 +3,8 @@
 @section('title', 'Standings')
 
 @section('content')
-    <table>
-        <tr>
+    <table id='standings'>
+        <thead>
             <th>Name</th>
             <th>Won</th>
             <th>Drawn</th>
@@ -13,7 +13,8 @@
             <th>PA</th>
             <th>PD +/-</th>
             <th>Points</th>
-        </tr>
+        </thead>
+        <tbody>
         @foreach($standings as $standing)
             <tr>
                 <td><a href="/info/{{ $standing['league_entry'] }}">{{ $standing['league_entry'] }}</a></td>
@@ -26,6 +27,19 @@
                 <td>{{ $standing['total'] }}</td>
             </tr>
         @endforeach
+        </tbody>
     </table>
 @endsection
 
+@section('javascript')
+<script>
+    $(document).ready( function () {
+        $('#standings').DataTable({
+            order: [],
+            bInfo: false,
+            bPaginate: false,
+            searching: false,
+        });
+    } );
+</script>
+@endsection

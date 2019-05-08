@@ -12,7 +12,7 @@ class APIController extends BaseController
 {
     private $leagueID = 43009;
     private $minutesPlayed = 1800;
-    private $cacheTime = 600; // 10 minutes
+    private $cacheTime = 3600; // 60 minutes
 
     /**
      * Get all the information about the league
@@ -141,13 +141,15 @@ class APIController extends BaseController
         $teams = $this->getTeams();
         foreach($teams as $team) {
             foreach($matches as $key => $match) {
-                if($team['id'] == $match['league_entry_1']) {
-                    $matches[$key]['league_entry_1_id'] = $team['entry_id'];
-                    $matches[$key]['league_entry_1'] = $team['entry_name'];
-                }
-                if($team['id'] == $matches[$key]['league_entry_2']) {
-                    $matches[$key]['league_entry_2_id'] = $team['entry_id'];
-                    $matches[$key]['league_entry_2'] = $team['entry_name'];
+                if($match['finished'] == true) {
+                    if($team['id'] == $match['league_entry_1']) {
+                        $matches[$key]['league_entry_1_id'] = $team['entry_id'];
+                        $matches[$key]['league_entry_1'] = $team['entry_name'];
+                    }
+                    if($team['id'] == $matches[$key]['league_entry_2']) {
+                        $matches[$key]['league_entry_2_id'] = $team['entry_id'];
+                        $matches[$key]['league_entry_2'] = $team['entry_name'];
+                    }
                 }
             }
         }
@@ -386,4 +388,61 @@ class APIController extends BaseController
         }
         return $scores;
     }
+
+    public function addKeyToField(&$array, $field) {
+        foreach($array as $key => &$value) {
+            $value[$field] = ($key + 1);
+        }
+    }
+
+    /**
+     * Return the weekly positions of the teams in the league
+     * @param type $week is the gameweek to run up to
+     * @return an array
+     */
+    public function getPos($week = null) {
+        $results = $this->getResults();
+        $teams = $this->getTeams();
+        $pos = [];
+        foreach($teams as $key => $team) {
+            $pos[$key]['entry_name'] = $team['entry_name'];
+            $pos[$key]['score'] = 0;
+            $pos[$key]['points'] = 0;
+            $pos[$key]['position'] = 0;
+        }
+        foreach($results as $result) {
+            if($result['event'] <= $week) {
+                foreach($pos as &$team) {
+                    if($team['entry_name'] == $result['league_entry_1']) {
+                        if($result['league_entry_1_points'] > $result['league_entry_2_points']) {
+                            $team['score'] += 3;                            
+                        } else if ($result['league_entry_1_points'] == $result['league_entry_2_points']) {
+                            $team['score'] += 1;
+                        }
+                        $team['points'] += $result['league_entry_1_points'];
+                    } else if ($team['entry_name'] == $result['league_entry_2']) {
+                        if($result['league_entry_1_points'] < $result['league_entry_2_points']) {
+                            $team['score'] += 3;
+                        } else if ($result['league_entry_1_points'] == $result['league_entry_2_points']) {
+                            $team['score'] += 1;
+                        }
+                        $team['points'] += $result['league_entry_2_points'];
+                    }
+                }
+            }
+            array_multisort(array_column($pos, 'score'), SORT_DESC, array_column($pos, 'points'), SORT_DESC, $pos);
+        }
+        $this->addKeyToField($pos, 'position');
+        return $pos;
+    }
+
+    public function getPositions($week = null) {
+        $position = [];
+        for($i = 1; $i <= $week; $i++) {
+            $position[$i] = $this->getPos($i);
+        }
+        return $position;
+    }
+
+    
 }

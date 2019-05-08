@@ -437,11 +437,22 @@ class APIController extends BaseController
     }
 
     public function getPositions($week = null) {
+        $teams = $this->getTeams();
         $position = [];
         for($i = 1; $i <= $week; $i++) {
             $position[$i] = $this->getPos($i);
         }
-        return $position;
+        $league_history = [];
+        foreach($teams as &$team) {
+            foreach($position as $key => $pos) {
+                foreach($pos as $p) {
+                    if($p['entry_name'] == $team['entry_name']) {
+                        $league_history[$team['entry_name']][$key]['position'] = $p['position'];
+                    }
+                }
+            }
+        }
+        return $league_history;
     }
 
     

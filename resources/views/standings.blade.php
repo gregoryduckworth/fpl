@@ -29,10 +29,11 @@
         @endforeach
         </tbody>
     </table>
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="https://code.highcharts.com/stock/highstock.js"></script>
-<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
 <div id="container"></div>
 @endsection
 
@@ -47,56 +48,33 @@
         });
     });
 
-    var seriesOptions = [],
-    seriesCounter = 0;
+    console.log({!! json_encode($positions) !!});
 
-    /**
-     * Create the chart when all data is loaded
-     * @returns {undefined}
-     */
-    function createChart() {
-
-        Highcharts.stockChart('container', {
-
-            yAxis: {
-                labels: {
-                    formatter: function () {
-                        return (this.value > 0 ? ' + ' : '') + this.value + '%';
-                    }
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 2,
-                    color: 'silver'
-                }]
-            },
-
-            plotOptions: {
-                series: {
-                    showInNavigator: true
-                }
-            },
-
-            tooltip: {
-                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-                valueDecimals: 0,
-                split: true
-            },
-
-            series: seriesOptions
-        });
-    }
-
-    $.getJSON('{{route('positions')}}/38',    function (data) {
-        Object.keys(data).forEach(function(key) {
-
-            seriesOptions[key] = {
-                name: key,
-                data: data[key].data,
-            };
-        });
-        console.log(seriesOptions);
-        createChart();
+   Highcharts.chart('container', {
+      title: {
+        text: 'League Position'
+      },
+      yAxis: {
+        title: {
+          text: 'Position'
+        },
+        tickInterval: 1,
+        reversed: true,
+        max: 12,
+        min: 1,
+        ceiling: 12,
+        floor: 1,
+        allowDecimals: false,
+      },
+      xAxis: {
+        title: {
+          text: 'Team Name'
+        },
+        tickInterval: 1,
+        max: 38,
+        min: 1,
+      },
+      series: {!! json_encode($positions) !!},
     });
 </script>
 @endsection

@@ -15,12 +15,13 @@ use Illuminate\Http\Request;
 
 Route::get('/', 'API\APIController@getAPI')->name('api');
 Route::get('teams', 'API\APIController@getTeams')->name('teams');
+Route::get('teamnames', 'API\APIController@getTeamNames')->name('teamnames');
 Route::get('matches', 'API\APIController@getMatches')->name('matches');
 Route::get('draft', 'API\APIController@getDraft')->name('draft');
 Route::get('all-teams', 'API\APIController@getAllTeamInfo')->name('all-teams');
 Route::get('trader', 'API\APIController@getTraders')->name('trader');
 Route::get('results/{gameweek?}', 'API\APIController@getResults')->name('results');
-Route::get('positions/{gameweek?}', 'API\APIController@getPositions')->name('positions');
+Route::get('positions/{team?}', 'API\APIController@getPositions')->name('positions');
 Route::get('biggest', 'API\APIController@getBiggest')->name('biggest');
 Route::get('highest', 'API\APIController@getHighest')->name('highest');
 Route::get('lowest', 'API\APIController@getLowest')->name('lowest');

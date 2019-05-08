@@ -27,9 +27,16 @@ class HomeController extends BaseController
     }
 
     public function standings()
-    {
+    {   
+        $teams = json_decode(file_get_contents(route('teamnames')), true);
+        $positions = [];
+        foreach($teams as $key => $team) {
+            $positions[$key]['name'] = $team;
+            $positions[$key]['data'] = json_decode(file_get_contents(route('positions', [$team])), true);
+        }
      	return view('standings')->with([
-        	'standings' => json_decode(file_get_contents(route('standings')), true),
+        	'positions' => $positions,
+            'standings' => json_decode(file_get_contents(route('standings')), true),
         ]);
     }
 

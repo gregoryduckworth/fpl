@@ -60,6 +60,15 @@ class APIController extends BaseController
         return $json['league_entries'];
     }
 
+    public function getTeamNames() {
+        $json = $this->getTeams();
+        $teamnames = [];
+        foreach($json as $team) {
+            $teamnames[] = $team['entry_name'];
+        }
+        return $teamnames;
+    }
+
     /**
      * Return all the matches with basic information
      * @return type
@@ -436,19 +445,16 @@ class APIController extends BaseController
         return $pos;
     }
 
-    public function getPositions($week = null) {
-        $teams = $this->getTeams();
+    public function getPositions($team) {
         $position = [];
-        for($i = 1; $i <= $week; $i++) {
+        for($i = 1; $i <= 38; $i++) {
             $position[$i] = $this->getPos($i);
         }
         $league_history = [];
-        foreach($teams as &$team) {
-            foreach($position as $key => $pos) {
-                foreach($pos as $p) {
-                    if($p['entry_name'] == $team['entry_name']) {
-                        $league_history[$team['entry_name']]['data'][] = [$key, $p['position']];
-                    }
+        foreach($position as $key => $pos) {
+            foreach($pos as $p) {
+                if($p['entry_name'] == $team) {
+                    $league_history[] = $p['position'];
                 }
             }
         }

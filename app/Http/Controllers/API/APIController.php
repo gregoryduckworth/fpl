@@ -447,7 +447,7 @@ class APIController extends BaseController
             foreach($position as $key => $pos) {
                 foreach($pos as $p) {
                     if($p['entry_name'] == $team['entry_name']) {
-                        $league_history[$team['entry_name']][$key]['position'] = $p['position'];
+                        $league_history[$team['entry_name']]['data'][] = [$key, $p['position']];
                     }
                 }
             }

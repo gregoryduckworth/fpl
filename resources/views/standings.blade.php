@@ -29,12 +29,10 @@
         @endforeach
         </tbody>
     </table>
-
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
 <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
-
 <div id="container"></div>
 @endsection
 
@@ -47,59 +45,58 @@
             bPaginate: false,
             searching: false,
         });
-    } );
-
-    Highcharts.stockChart('container', {
-
-        rangeSelector: {
-            selected: 4
-        },
-
-        yAxis: {
-            labels: {
-                formatter: function () {
-                    return (this.value > 0 ? ' + ' : '') + this.value + '%';
-                }
-            },
-            plotLines: [{
-                value: 0,
-                width: 2,
-                color: 'silver'
-            }]
-        },
-
-        plotOptions: {
-            series: {
-                compare: 'percent',
-                showInNavigator: true
-            }
-        },
-
-        tooltip: {
-            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-            valueDecimals: 2,
-            split: true
-        },
-
-        //series: seriesOptions
     });
 
+    var seriesOptions = [],
+    seriesCounter = 0;
 
-    $.getJSON('/api/positions/38', function (data) {
+    /**
+     * Create the chart when all data is loaded
+     * @returns {undefined}
+     */
+    function createChart() {
 
-        console.log(data);
-        seriesOptions[i] = {
-            name: name,
-            data: data
-        };
+        Highcharts.stockChart('container', {
 
-        // As we're loading the data asynchronously, we don't know what order it will arrive. So
-        // we keep a counter and create the chart when all the data is loaded.
-        seriesCounter += 1;
+            yAxis: {
+                labels: {
+                    formatter: function () {
+                        return (this.value > 0 ? ' + ' : '') + this.value + '%';
+                    }
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 2,
+                    color: 'silver'
+                }]
+            },
 
-        if (seriesCounter === names.length) {
-            createChart();
-        }
+            plotOptions: {
+                series: {
+                    showInNavigator: true
+                }
+            },
+
+            tooltip: {
+                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+                valueDecimals: 0,
+                split: true
+            },
+
+            series: seriesOptions
+        });
+    }
+
+    $.getJSON('{{route('positions')}}/38',    function (data) {
+        Object.keys(data).forEach(function(key) {
+
+            seriesOptions[key] = {
+                name: key,
+                data: data[key].data,
+            };
+        });
+        console.log(seriesOptions);
+        createChart();
     });
 </script>
 @endsection

@@ -48,8 +48,6 @@
         });
     });
 
-    console.log({!! json_encode($positions) !!});
-
    Highcharts.chart('container', {
       title: {
         text: 'League Position'

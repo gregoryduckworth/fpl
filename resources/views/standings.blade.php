@@ -73,6 +73,11 @@
         min: 1,
       },
       series: {!! json_encode($positions) !!},
+      tooltip: {
+        formatter: function () {
+            return 'Gameweek: <b>' + this.x +'</b>, Position: <b>' + this.y + '</b>';
+        }
+      },
     });
 </script>
 @endsection

@@ -23,6 +23,8 @@ class HomeController extends BaseController
         	'defender' => json_decode(file_get_contents(route('defender')), true),
         	'midfielder' => json_decode(file_get_contents(route('midfielder')), true),
         	'forward' => json_decode(file_get_contents(route('forward')), true),
+            'longestWin' => json_decode(file_get_contents(route('longestwinstreak')), true),
+            'longestLoss' => json_decode(file_get_contents(route('longestloststreak')), true),
         ]);
     }
 

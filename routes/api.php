@@ -36,3 +36,6 @@ Route::get('keeper', 'API\APIController@getBestKeeper')->name('keeper');
 Route::get('defender', 'API\APIController@getBestDefender')->name('defender');
 Route::get('midfielder', 'API\APIController@getBestMidfielder')->name('midfielder');
 Route::get('forward', 'API\APIController@getBestForward')->name('forward');
+Route::get('longeststreak', 'API\APIController@getLongestStreak')->name('longeststreak');
+Route::get('longestwinstreak', 'API\APIController@getLongestWinStreak')->name('longestwinstreak');
+Route::get('longestloststreak', 'API\APIController@getLongestLostStreak')->name('longestloststreak');

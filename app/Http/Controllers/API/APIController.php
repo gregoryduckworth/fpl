@@ -111,22 +111,7 @@ class APIController extends BaseController
         return $team_info;
     }
 
-    /**
-     * Get the team with the most trades
-     * @return type
-     */
-    public function getTraders() {
-        $json = $this->getAllTeamInfo();
-        $trader = [];
-        foreach($json as $team) {
-            if(empty($trader) || $team['entry']['transactions_total'] > $trader['transactions_total']) {
-                $trader = $team['entry'];
-            }
-        }
-        return $trader;
-    }
-
-    /**
+        /**
      * Helper function to return the team information that a certain player plays for
      * @return type
      */
@@ -461,5 +446,87 @@ class APIController extends BaseController
         return $league_history;
     }
 
+    public function getLongestStreak() {
+        $results = $this->getResults();
+        $teams = $this->getTeamNames();
+        foreach($teams as $team) {
+            $streak[$team]['winCurrent'] = 0;
+            $streak[$team]['winLongest'] = 0;
+            $streak[$team]['lostCurrent'] = 0;
+            $streak[$team]['lostLongest'] = 0;
+        }
+        foreach($results as $result) {
+            foreach($teams as $team) {
+                if($team == $result['league_entry_1']) {
+                    if($result['league_entry_1_points'] > $result['league_entry_2_points']) {
+                        $streak[$team]['winCurrent'] += 1;
+                        $streak[$team]['lostCurrent'] = 0;
+                    } else if($result['league_entry_1_points'] < $result['league_entry_2_points']) {
+                        $streak[$team]['winCurrent'] = 0;
+                        $streak[$team]['lostCurrent'] += 1;
+                    }
+                } else if($team == $result['league_entry_2']) {
+                    if($result['league_entry_1_points'] < $result['league_entry_2_points']) {
+                        $streak[$team]['winCurrent'] += 1;
+                        $streak[$team]['lostCurrent'] = 0;
+                    } else if($result['league_entry_1_points'] > $result['league_entry_2_points']) {
+                        $streak[$team]['winCurrent'] = 0;
+                        $streak[$team]['lostCurrent'] += 1;
+                    }
+                }
+                if($streak[$team]['winCurrent'] > $streak[$team]['winLongest']) {
+                    $streak[$team]['winLongest'] = $streak[$team]['winCurrent'];
+                }
+                if($streak[$team]['lostCurrent'] > $streak[$team]['lostLongest']) {
+                    $streak[$team]['lostLongest'] = $streak[$team]['lostCurrent'];
+                }
+            }
+        }
+        return $streak;
+    }
+
+    /**
+     * Get the team with the most trades
+     * @return type
+     */
+    public function getTraders() {
+        $teams = $this->getAllTeamInfo();
+        $trader = [];
+        foreach($teams as $team) {
+            if($team['entry']['transactions_total'] > $trader['value']) {
+                $trader['name'] = $team['entry']['name'];
+                $trader['value'] = $team['entry']['transactions_total'];
+            }
+        }
+        return $trader;
+    }
+
+    public function getLongestWinStreak() {
+        $streaks = $this->getLongestStreak();
+        $winner = [];
+        $winner['name'] = '';
+        $winner['value'] = 0;
+        foreach($streaks as $key => $streak) {
+            if($winner['value'] < $streak['winLongest']) {
+                $winner['name'] = $key;
+                $winner['value'] = $streak['winLongest'];
+            }
+        }
+        return $winner;
+    }
+
+    public function getLongestLostStreak() {
+        $streaks = $this->getLongestStreak();
+        $looser = [];
+        $looser['name'] = '';
+        $looser['value'] = 0;
+        foreach($streaks as $key => $streak) {
+            if($looser['value'] < $streak['lostLongest']) {
+                $looser['name'] = $key;
+                $looser['value'] = $streak['lostLongest'];
+            }
+        }
+        return $looser;
+    }
     
 }

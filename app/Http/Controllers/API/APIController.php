@@ -258,14 +258,26 @@ class APIController extends BaseController
         return $player_info;
     }
 
+    /**
+     * Get the best player based on points_per_game
+     * @return $array
+     */
     public function getMVP() {
         return $this->getPlayerBestInfo('points_per_game');
     }
 
+    /**
+     * Get the best player based on bonus points 
+     * @return $array
+     */
     public function getUndervalued() {
         return $this->getPlayerBestInfo('bps');
     }
 
+    /**
+     * Get the worst player based on points_per_game
+     * @return $array
+     */
     public function getWorst() {
         return $this->getPlayerWorstInfo('points_per_game');
     }
@@ -311,18 +323,34 @@ class APIController extends BaseController
         return $player_info;
     }
 
+    /**
+     * Get the best keeper ID = 1
+     * @return $array
+     */
     public function getBestKeeper() {
         return $this->getBestPlayerPosition(1);
     }
 
+    /**
+     * Get the best defender ID = 2
+     * @return $array
+     */
     public function getBestDefender() {
         return $this->getBestPlayerPosition(2);
     }
 
+    /**
+     * Get the best midfielder ID = 3
+     * @return $array
+     */
     public function getBestMidfielder() {
         return $this->getBestPlayerPosition(3);
     }
 
+    /**
+     * Get the best forward ID = 4
+     * @return $array
+     */
     public function getBestForward() {
         return $this->getBestPlayerPosition(4);
     }
@@ -383,6 +411,11 @@ class APIController extends BaseController
         return $scores;
     }
 
+    /**
+     * Add the key number to a field
+     * @param &$array
+     * @param $field
+     */
     public function addKeyToField(&$array, $field) {
         foreach($array as $key => &$value) {
             $value[$field] = ($key + 1);
@@ -430,6 +463,11 @@ class APIController extends BaseController
         return $pos;
     }
 
+    /**
+     * Work out the league position on a gameweek basis
+     * @param  $team
+     * @return $array
+     */
     public function getPositions($team) {
         $position = [];
         for($i = 1; $i <= 38; $i++) {
@@ -446,6 +484,10 @@ class APIController extends BaseController
         return $league_history;
     }
 
+    /**
+     * Work out the longest Win/Lose streak for each team
+     * @return $array
+     */
     public function getLongestStreak() {
         $results = $this->getResults();
         $teams = $this->getTeamNames();
@@ -486,47 +528,51 @@ class APIController extends BaseController
     }
 
     /**
+     * Get the largest value from an array that is passed in
+     * @param  $array 
+     * @param  $value The field which to compare
+     * @return $array containing the highest name with its associated value
+     */
+    public function getLargest($array, $value) {
+        $newArray = [];
+        $newArray['name'] = '';
+        $newArray['value'] = 0;
+        foreach($array as $key => $a) {
+            if($newArray['value'] < $a[$value]) {
+                $newArray['name'] = $key;
+                $newArray['value'] = $a[$value];
+            }
+        }
+        return $newArray;
+    }
+
+    /**
      * Get the team with the most trades
      * @return type
      */
     public function getTraders() {
         $teams = $this->getAllTeamInfo();
-        $trader = [];
-        foreach($teams as $team) {
-            if($team['entry']['transactions_total'] > $trader['value']) {
-                $trader['name'] = $team['entry']['name'];
-                $trader['value'] = $team['entry']['transactions_total'];
-            }
+        $trades = [];
+        foreach($teams as $key => $team) {
+            $trades[$team['entry']['name']]['value'] = $team['entry']['transactions_total'];
         }
-        return $trader;
+        return $this->getLargest($trades, 'value');
     }
 
+    /**
+     * Get the longest winning streak
+     * @return $array containing the highest name with its associated value
+     */
     public function getLongestWinStreak() {
-        $streaks = $this->getLongestStreak();
-        $winner = [];
-        $winner['name'] = '';
-        $winner['value'] = 0;
-        foreach($streaks as $key => $streak) {
-            if($winner['value'] < $streak['winLongest']) {
-                $winner['name'] = $key;
-                $winner['value'] = $streak['winLongest'];
-            }
-        }
-        return $winner;
+        return $this->getLargest($this->getLongestStreak(), 'winLongest');
     }
 
+    /**
+     * Get the longest loosing streak
+     * @return $array containing the highest name with its associated value
+     */
     public function getLongestLostStreak() {
-        $streaks = $this->getLongestStreak();
-        $looser = [];
-        $looser['name'] = '';
-        $looser['value'] = 0;
-        foreach($streaks as $key => $streak) {
-            if($looser['value'] < $streak['lostLongest']) {
-                $looser['name'] = $key;
-                $looser['value'] = $streak['lostLongest'];
-            }
-        }
-        return $looser;
+        return $this->getLargest($this->getLongestStreak(), 'lostLongest');
     }
     
 }

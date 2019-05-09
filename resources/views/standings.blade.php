@@ -3,7 +3,7 @@
 @section('title', 'Standings')
 
 @section('content')
-    <table id='standings'>
+    <table id='standings' class='stripe display compact'>
         <thead>
             <th>Name</th>
             <th>Won</th>

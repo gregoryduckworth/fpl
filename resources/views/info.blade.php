@@ -4,16 +4,20 @@
 
 @section('content')
     <h2>Head to Head</h2>
-    <table>
-        <th>Name</th>
-        <th>For</th>
-        <th>Against</th>
-        <th>+/-</th>
+    <table id='head-to-head' class='stripe display compact'>
+        <thead>
+            <th>Name</th>
+            <th>For</th>
+            <th>Against</th>
+            <th>+/-</th>
+        </thead>
+        <tbody>
         @foreach($scores as $key => $score)
             <tr> 
                 <td>{{ $key }}</td><td>{{ $score['for'] }}</td><td>{{ $score['against'] }}</td><td>{{ $score['for'] - $score['against'] }}</td>
             </tr>
         @endforeach
+        </tbody>
     </table>
     <h2>League Results</h2>
     <table>
@@ -31,3 +35,16 @@
 
 @endsection
 
+
+@section('javascript')
+<script>
+    $(document).ready( function () {
+        $('#head-to-head').DataTable({
+            order: [],
+            bInfo: false,
+            bPaginate: false,
+            searching: false,
+        });
+    });
+</script>
+@endsection

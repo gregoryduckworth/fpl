@@ -68,11 +68,14 @@
         title: {
           text: 'Team Name'
         },
-        tickInterval: 1,
-        max: 38,
-        min: 1,
+        tickPositions: Array.apply(null, {length: 39}).map(Number.call, Number)
       },
       series: {!! json_encode($positions) !!},
+      plotOptions: {
+        series: {
+          pointStart: 1,
+        }
+      },
       tooltip: {
         formatter: function () {
           return 'Team: <b>' + this.series.userOptions.name + '</b><br>Gameweek: <b>' + this.x +'</b>, Position: <b>' + this.y + '</b>';
